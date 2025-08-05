@@ -1,0 +1,272 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  firstName    String?
+  lastName     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  applications Application[]
+  companies    Company[]
+  tasks        Task[]        // Added: Users can have tasks not tied to applications
+  documents    Document[]    // Added: Users can have general documents
+
+  @@map("User")
+}
+
+model Company {
+  id          Int      @id @default(autoincrement())
+  name        String
+  website     String?
+  industry    String?
+  location    String?
+  description String?
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Foreign keys
+  userId Int
+
+  // Relations
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  applications Application[]
+
+  @@unique([userId, name]) // Prevent duplicate company names per user
+  @@map("Company")
+}
+
+model Application {
+  id              Int                @id @default(autoincrement())
+  positionTitle   String
+  applicationDate DateTime           @default(now())
+  status          ApplicationStatus  @default(applied)
+  jobDescription  String?
+  requirements    String?
+  location        String?
+  salaryRange     String?
+  applicationUrl  String?
+  referralSource  String?
+  priority        Priority           @default(medium)
+  notes           String?
+  employmentType  EmploymentType?    @default(full_time)
+  workType        WorkType?          @default(remote)
+  salaryMin       Int?               // Minimum salary
+  salaryMax       Int?               // Maximum salary
+  source          String?            // Application source (LinkedIn, etc.)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  // Foreign keys
+  userId    Int
+  companyId Int
+
+  // Relations
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  company        Company          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  statusHistory  StatusHistory[]
+  interviews     Interview[]
+  tasks          Task[]
+  documents      Document[]
+
+  @@map("Application")
+}
+
+enum EmploymentType {
+  full_time
+  part_time
+  contract
+  internship
+
+  @@map("EmploymentType")
+}
+
+enum WorkType {
+  remote
+  hybrid
+  on_site
+
+  @@map("WorkType")
+}
+
+model StatusHistory {
+  id        Int               @id @default(autoincrement())
+  status    ApplicationStatus
+  notes     String?
+  createdAt DateTime          @default(now())
+
+  // Foreign keys
+  applicationId Int
+
+  // Relations
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@map("StatusHistory")
+}
+
+model Interview {
+  id              Int           @id @default(autoincrement())
+  type            InterviewType @default(phone)
+  title           String?       // Added: Interview round name
+  scheduledDate   DateTime?     // Renamed from scheduledAt for consistency
+  duration        Int?          // in minutes
+  status          String        @default("scheduled") // Added: scheduled, completed, cancelled, rescheduled
+  
+  // Interviewer Information - Enhanced
+  interviewerName  String?      // Renamed from interviewer
+  interviewerEmail String?      // Added: Interviewer contact
+  interviewerTitle String?      // Added: Interviewer position
+  
+  // Meeting Details - Enhanced
+  location        String?
+  meetingLink     String?       // Added: Zoom/Teams URL
+  meetingId       String?       // Added: Meeting ID/Password
+  
+  // Notes and Preparation - Enhanced
+  preparationNotes String?      // Pre-interview prep
+  interviewNotes   String?      // Renamed from notes
+  feedback         String?      // Post-interview feedback
+  nextSteps        String?      // Follow-up actions
+  
+  // Outcome - Enhanced
+  outcome         String?       // positive, negative, neutral, pending
+  followUpDate    DateTime?     // Added: When to follow up
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  // Foreign keys
+  applicationId Int
+
+  // Relations
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@map("Interview")
+}
+
+model Task {
+  id              Int       @id @default(autoincrement())
+  title           String
+  description     String?
+  type            String    @default("custom") // Added: follow_up, research, prepare, apply, custom
+  dueDate         DateTime?
+  reminderDate    DateTime? // Added: When to remind
+  estimatedTime   Int?      // Added: Minutes estimated
+  completed       Boolean   @default(false)
+  completedAt     DateTime? // Added: When completed
+  completionNotes String?   // Added: Notes on completion
+  priority        Priority  @default(medium)
+  tags            String[]  // Added: Custom tags for organization
+  category        String?   // Added: work, personal, urgent
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Foreign keys - Made application optional for general tasks
+  applicationId Int?
+  userId        Int         // Added: Tasks can belong to user directly
+
+  // Relations
+  application Application? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("Task")
+}
+
+model Document {
+  id                Int          @id @default(autoincrement())
+  name              String
+  originalFilename  String?
+  filename          String?      // Added: Original upload name
+  type              DocumentType @default(resume)
+  url               String
+  fileExtension     String?      // Added: .pdf, .docx, etc.
+  size              Int?         // in bytes
+  mimeType          String?      // Added: File MIME type
+  
+  // Document Classification - Enhanced
+  category          String?      // Added: primary, backup, custom
+  version           Int          @default(1) // Added: Version tracking
+  isActive          Boolean      @default(true) // Added: Active/archived
+  
+  // Storage - Enhanced
+  storageKey        String?      // Added: S3/storage key
+  
+  // Metadata - Enhanced
+  uploadedAt        DateTime     @default(now())
+  lastAccessedAt    DateTime?    // Added: Track usage
+  description       String?      // Added: Document description
+  tags              String[]     // Added: Custom tags
+
+  createdAt         DateTime     @default(now())  
+  updatedAt         DateTime     @updatedAt         
+  
+  // Foreign keys - Made application optional for general documents
+  applicationId Int?
+  userId        Int            // Added: Documents can belong to user directly
+
+  // Relations
+  application Application? @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("Document")
+}
+
+// Enums
+enum ApplicationStatus {
+  applied
+  reviewing
+  interview_scheduled
+  interviewed
+  offer
+  rejected
+  withdrawn
+
+  @@map("ApplicationStatus")
+}
+
+enum Priority {
+  low
+  medium
+  high
+  urgent
+
+  @@map("Priority")
+}
+
+enum InterviewType {
+  phone
+  video
+  in_person
+  technical
+  behavioral
+  panel
+  final
+
+  @@map("InterviewType")
+}
+
+enum DocumentType {
+  resume
+  cover_letter
+  portfolio
+  transcript
+  recommendation
+  certification  // Added: Professional certifications
+  other
+
+  @@map("DocumentType")
+}

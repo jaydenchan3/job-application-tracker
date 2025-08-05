@@ -1,0 +1,159 @@
+/* DASHBOARD LAYOUT FIXES - Add these to your components.css */
+
+/* ===== IMPROVED GRID LAYOUTS ===== */
+
+.stats-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6;
+  }
+  
+  .dashboard-grid {
+    @apply space-y-6;
+  }
+  
+  /* ===== RESPONSIVE IMPROVEMENTS ===== */
+  
+  .stats-card {
+    @apply bg-white rounded-lg shadow p-4 sm:p-6 w-full;
+  }
+  
+  .stats-card-content {
+    @apply flex items-center w-full;
+  }
+  
+  .stats-card-info {
+    @apply ml-3 sm:ml-4 min-w-0 flex-1;
+  }
+  
+  .stats-card-label {
+    @apply text-xs sm:text-sm font-medium text-gray-600 truncate;
+  }
+  
+  .stats-card-value {
+    @apply text-xl sm:text-2xl font-bold text-gray-900;
+  }
+  
+  /* ===== CARD LAYOUT FIXES ===== */
+  
+  .card--padded {
+    @apply bg-white rounded-lg shadow p-4 sm:p-6 w-full;
+  }
+  
+  /* ===== STATUS BREAKDOWN RESPONSIVE ===== */
+  
+  .status-breakdown {
+    @apply grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3 sm:gap-4;
+  }
+  
+  .status-breakdown-item {
+    @apply text-center min-w-0;
+  }
+  
+  .status-badge {
+    @apply inline-flex items-center justify-center px-2 py-1 sm:px-3 sm:py-1 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap;
+  }
+  
+  /* ===== APPLICATION CARDS ===== */
+  
+  .application-card {
+    @apply flex items-center justify-between p-3 sm:p-4 border rounded-lg hover:bg-gray-50 transition-colors w-full;
+  }
+  
+  .application-card-content {
+    @apply min-w-0 flex-1 pr-2;
+  }
+  
+  .application-card-title {
+    @apply font-medium text-gray-900 text-sm sm:text-base truncate;
+  }
+  
+  .application-card-subtitle {
+    @apply text-xs sm:text-sm text-gray-600 truncate;
+  }
+  
+  .application-card-meta {
+    @apply text-right flex-shrink-0;
+  }
+  
+  /* ===== TRENDS CHART RESPONSIVE ===== */
+  
+  .trends-chart {
+    @apply space-y-4;
+  }
+  
+  .trends-bars {
+    @apply flex items-end justify-between space-x-1 sm:space-x-2 h-32 sm:h-40 w-full;
+  }
+  
+  .trends-bar {
+    @apply flex-1 flex flex-col items-center min-w-0;
+  }
+  
+  .trends-legend {
+    @apply flex flex-wrap justify-center gap-2 sm:gap-4 text-xs sm:text-sm;
+  }
+  
+  .trends-legend-item {
+    @apply flex items-center whitespace-nowrap;
+  }
+  
+  /* ===== MAIN CONTENT CONTAINER ===== */
+  
+  .main-content {
+    @apply max-w-7xl mx-auto py-4 px-4 sm:py-6 sm:px-6 lg:px-8 w-full;
+  }
+  
+  /* ===== HEADER RESPONSIVE ===== */
+  
+  .header-content {
+    @apply flex justify-between items-center h-14 sm:h-16 w-full;
+  }
+  
+  .header-nav {
+    @apply flex items-center space-x-2 sm:space-x-4 flex-shrink-0;
+  }
+  
+  .header-title--truncate {
+    @apply text-lg sm:text-2xl font-bold text-gray-900 truncate flex-1 min-w-0;
+  }
+  
+  /* ===== MOBILE SPECIFIC FIXES ===== */
+  
+  @media (max-width: 640px) {
+    .stats-grid {
+      @apply grid-cols-1 gap-3;
+    }
+    
+    .stats-card {
+      @apply p-4;
+    }
+    
+    .stats-card-value {
+      @apply text-lg;
+    }
+    
+    .status-breakdown {
+      @apply grid-cols-2 gap-2;
+    }
+    
+    .trends-bars {
+      @apply h-24 space-x-1;
+    }
+    
+    .application-card {
+      @apply p-3;
+    }
+  }
+  
+  /* ===== CONTAINER WIDTH FIXES ===== */
+  
+  .page-wrapper {
+    @apply min-h-screen bg-gray-50 w-full;
+  }
+  
+  .header {
+    @apply bg-white shadow-sm w-full;
+  }
+  
+  .header-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full;
+  }
